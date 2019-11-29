@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <btf type="MegaMolGLSLShader" version="1.0" namespace="RaycastVolumeRenderer">
+    <include file="common"/>
 
     <shader name="compute">
         <snippet type="version">430</snippet>
@@ -32,17 +33,12 @@
 
     <shader name="vert">
         <snippet type="version">430</snippet>
-        <snippet type="file">RaycastVolumeRenderer-Vertex.glsl</snippet>
+        <snippet name="body" type="file">raycast_volume/render_to_framebuffer_v.glsl</snippet>
     </shader>
 
     <shader name="frag">
         <snippet type="version">430</snippet>
-        <snippet type="file">RaycastVolumeRenderer-Fragment.glsl</snippet>
-    </shader>
-
-    <shader name="frag_aggr">
-        <snippet type="version">430</snippet>
-        <snippet type="file">RaycastVolumeRenderer-Fragment-Aggr.glsl</snippet>
+        <snippet name="body" type="file">raycast_volume/render_to_framebuffer_f.glsl</snippet>
     </shader>
 
 </btf>

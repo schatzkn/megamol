@@ -331,6 +331,7 @@ bool RaycastVolumeRenderer::Render(megamol::core::Call& call) {
     rt_resolution[1] = static_cast<float>(m_render_target->getHeight());
     glUniform2fv(compute_shdr->ParameterLocation("rt_resolution"), 1, rt_resolution);
 
+    // bbox sizes
     vec3 box_min;
     box_min[0] = m_volume_origin[0];
     box_min[1] = m_volume_origin[1];

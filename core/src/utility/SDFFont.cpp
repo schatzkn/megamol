@@ -1247,7 +1247,9 @@ void SDFFont::render(unsigned int gc, const float *col[4]) const {
 
     glUseProgram(0); // instead of usedShader->Disable() => because draw() is CONST
     glBindVertexArray(0);
+    glBindTexture(GL_TEXTURE_2D, 0);
     glDisable(GL_TEXTURE_2D);
+    glDisable(GL_DEPTH_TEST);
 
     // Reset blending
     if (!blendEnabled) {
@@ -1577,9 +1579,12 @@ bool SDFFont::loadFontTexture(vislib::StringA filename) {
             ARY_SAFE_DELETE(buf);
             return false;
         }
-
+        this->texture.Bind();
+        //glGenerateMipmap(GL_TEXTURE_2D);
+        //this->texture.SetFilter(GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
         this->texture.SetFilter(GL_LINEAR, GL_LINEAR);
         this->texture.SetWrap(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+        glBindTexture(GL_TEXTURE_2D, 0);
         ARY_SAFE_DELETE(buf);
     }
     else {
@@ -1588,6 +1593,7 @@ bool SDFFont::loadFontTexture(vislib::StringA filename) {
         return false;
     }
 
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
     return true;
 }
 
