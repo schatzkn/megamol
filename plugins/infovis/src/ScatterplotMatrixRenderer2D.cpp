@@ -362,9 +362,9 @@ bool ScatterplotMatrixRenderer2D::validate(core::view::CallRender2D& call, bool 
 
     if (this->floatTable == nullptr || !(*this->floatTable)(1)) return false;
     const auto cntFrames = this->floatTable->GetFrameCount();
-    call.SetTimeFramesCount(cntFrames);    // Tell view about the data set size.
+    call.SetTimeFramesCount(cntFrames); // Tell view about the data set size.
 
-    const auto now = static_cast<unsigned int>(call.Time());    // 
+    const auto now = static_cast<unsigned int>(call.Time()); //
     this->floatTable->SetFrameID(now);
 
     if (this->floatTable == nullptr || !(*(this->floatTable))(0)) return false;

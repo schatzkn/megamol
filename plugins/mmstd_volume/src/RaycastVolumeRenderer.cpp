@@ -7,8 +7,6 @@
 
 #include "RaycastVolumeRenderer.h"
 
-#include "linmath.h"
-
 #include "mmcore/CoreInstance.h"
 #include "mmcore/misc/VolumetricDataCall.h"
 #include "mmcore/param/BoolParam.h"
@@ -25,6 +23,9 @@
 #include "glowl/Texture.hpp"
 #include "glowl/Texture2D.hpp"
 #include "glowl/Texture3D.hpp"
+
+#include "glm/glm.hpp"
+#include "glm/gtc/type_ptr.hpp"
 
 #include <algorithm>
 #include <array>
@@ -326,22 +327,22 @@ bool RaycastVolumeRenderer::Render(megamol::core::Call& call) {
     glUniformMatrix4fv(compute_shdr->ParameterLocation("view_mx"), 1, GL_FALSE, modelViewMatrix_column);
     glUniformMatrix4fv(compute_shdr->ParameterLocation("proj_mx"), 1, GL_FALSE, projMatrix_column);
 
-    vec2 rt_resolution;
+    glm::vec2 rt_resolution;
     rt_resolution[0] = static_cast<float>(m_render_target->getWidth());
     rt_resolution[1] = static_cast<float>(m_render_target->getHeight());
-    glUniform2fv(compute_shdr->ParameterLocation("rt_resolution"), 1, rt_resolution);
+    glUniform2fv(compute_shdr->ParameterLocation("rt_resolution"), 1, glm::value_ptr(rt_resolution));
 
     // bbox sizes
-    vec3 box_min;
+    glm::vec3 box_min;
     box_min[0] = m_volume_origin[0];
     box_min[1] = m_volume_origin[1];
     box_min[2] = m_volume_origin[2];
-    vec3 box_max;
+    glm::vec3 box_max;
     box_max[0] = m_volume_origin[0] + m_volume_extents[0];
     box_max[1] = m_volume_origin[1] + m_volume_extents[1];
     box_max[2] = m_volume_origin[2] + m_volume_extents[2];
-    glUniform3fv(compute_shdr->ParameterLocation("boxMin"), 1, box_min);
-    glUniform3fv(compute_shdr->ParameterLocation("boxMax"), 1, box_max);
+    glUniform3fv(compute_shdr->ParameterLocation("boxMin"), 1, glm::value_ptr(box_min));
+    glUniform3fv(compute_shdr->ParameterLocation("boxMax"), 1, glm::value_ptr(box_max));
 
     glUniform3f(compute_shdr->ParameterLocation("halfVoxelSize"), 1.0f / (2.0f * (m_volume_resolution[0] - 1)),
         1.0f / (2.0f * (m_volume_resolution[1] - 1)), 1.0f / (2.0f * (m_volume_resolution[2] - 1)));

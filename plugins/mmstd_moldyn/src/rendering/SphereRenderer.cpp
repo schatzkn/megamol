@@ -103,6 +103,7 @@ SphereRenderer::SphereRenderer(void) : view::Renderer3DModule_2()
           "splat::attenuateSubpixel", "Splat: Attenuate alpha of points that should have subpixel size.")
     , useStaticDataParam("ssbo::staticData", "SSBO: Upload data only once per hash change and keep data static on GPU")
     , enableLightingSlot("ambient occlusion::enableLighting", "Ambient Occlusion: Enable Lighting")
+    , enableAOSlot("ao::enable_ao", "Ambient Occlusion: Enable Ambient Occlusion")
     , enableGeometryShader("ambient occlusion::useGsProxies",
           "Ambient Occlusion: Enables rendering using triangle strips from the geometry shader")
     , aoVolSizeSlot("ambient occlusion::volumeSize", "Ambient Occlusion: Longest volume edge")
