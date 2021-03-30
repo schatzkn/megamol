@@ -121,6 +121,11 @@ bool SibsonInterpolator::getExtentCallback(megamol::core::Call& c) {
     return true;
 }
 
+bool SibsonInterpolator::getDataCallback(megamol::core::Call& c) {
+    // TODO implement
+    return true;
+}
+
 // TODO functions
 
 bool SibsonInterpolator::dummyCallback(megamol::core::Call& c) {
