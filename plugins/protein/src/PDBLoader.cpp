@@ -2016,38 +2016,37 @@ void PDBLoader::resetAllData() {
     this->chainName.Clear();
     this->chainType.Clear();
 
-    // friessfn
-    // kroneml: "es wäre gut, wenn die Standard-Aminosäuren immer reingeschrieben werden (irgendwo im PDBLoader gibt es
-    // eine Liste, welche es gibt...)"
-    residueTypeName.Add("ALA");
-    residueTypeName.Add("ARG");
-    residueTypeName.Add("ASN");
-    residueTypeName.Add("ASP");
-    residueTypeName.Add("CYS");
-    residueTypeName.Add("GLN");
-    residueTypeName.Add("GLU");
-    residueTypeName.Add("GLY");
-    residueTypeName.Add("HIS");
-    residueTypeName.Add("ILE");
-    residueTypeName.Add("LEU");
-    residueTypeName.Add("LYS");
-    residueTypeName.Add("MET");
-    residueTypeName.Add("PHE");
-    residueTypeName.Add("PRO");
-    residueTypeName.Add("SER");
-    residueTypeName.Add("THR");
-    residueTypeName.Add("TRP");
-    residueTypeName.Add("TYR");
-    residueTypeName.Add("VAL");
-    residueTypeName.Add("ASH");
-    residueTypeName.Add("CYX");
-    residueTypeName.Add("CYM");
-    residueTypeName.Add("GLH");
-    residueTypeName.Add("HID");
-    residueTypeName.Add("HIE");
-    residueTypeName.Add("HIP");
-    residueTypeName.Add("LYN");
-    residueTypeName.Add("TYM");
+	// friessfn
+	// kroneml: "es w\E4re gut, wenn die Standard-Aminos\E4uren immer reingeschrieben werden (irgendwo im PDBLoader gibt es eine Liste, welche es gibt...)"
+	residueTypeName.Add("ALA");
+	residueTypeName.Add("ARG");
+	residueTypeName.Add("ASN");
+	residueTypeName.Add("ASP");
+	residueTypeName.Add("CYS");
+	residueTypeName.Add("GLN");
+	residueTypeName.Add("GLU");
+	residueTypeName.Add("GLY");
+	residueTypeName.Add("HIS");
+	residueTypeName.Add("ILE");
+	residueTypeName.Add("LEU");
+	residueTypeName.Add("LYS");
+	residueTypeName.Add("MET");
+	residueTypeName.Add("PHE");
+	residueTypeName.Add("PRO");
+	residueTypeName.Add("SER");
+	residueTypeName.Add("THR");
+	residueTypeName.Add("TRP");
+	residueTypeName.Add("TYR");
+	residueTypeName.Add("VAL");
+	residueTypeName.Add("ASH");
+	residueTypeName.Add("CYX");
+	residueTypeName.Add("CYM");
+	residueTypeName.Add("GLH");
+	residueTypeName.Add("HID");
+	residueTypeName.Add("HIE");
+	residueTypeName.Add("HIP");
+	residueTypeName.Add("LYN");
+	residueTypeName.Add("TYM");
 }
 
 
