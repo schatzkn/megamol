@@ -26,6 +26,7 @@
 #include "vislib/math/mathfunctions.h"
 #include "vislib/sys/sysfunctions.h"
 #include "vislib/types.h"
+#include "glm/glm.hpp"
 
 #define SFB716DEMO
 #define DARKER_COLORS
@@ -419,7 +420,7 @@ void PDBLoader::Frame::encodebits(char* outbuff, int bitsize, int bitoffset, uns
 /*
  * read frame-data from a given xtc-file
  */
-void PDBLoader::Frame::readFrame(std::fstream* file) {
+void PDBLoader::Frame::readFrame(std::fstream* file, const std::map<uint64_t, uint64_t>& idmap) {
 
     int* buffer;
     char* buffPt;
@@ -556,6 +557,8 @@ void PDBLoader::Frame::readFrame(std::fstream* file) {
     buffPt = (char*) buffer;
     bit_offset = 0;
 
+    bool idscramble = (idmap.size() == 0);
+    std::vector<glm::vec3> bufferCoordinates(atomCount, glm::vec3(0.0f));
 
     while (i < atomCount) {
 
@@ -758,6 +761,9 @@ PDBLoader::PDBLoader(void)
     this->capFilenameSlot << new param::FilePathParam("");
     this->MakeSlotAvailable(&this->capFilenameSlot);
 
+    this->mapFilenameSlot << new param::FilePathParam("");
+    this->MakeSlotAvailable(&this->mapFilenameSlot);
+
     this->forceDataCallerSlot.SetCompatibleCall<ForceDataCallDescription>();
     this->MakeSlotAvailable(&this->forceDataCallerSlot);
 
@@ -843,6 +849,11 @@ bool PDBLoader::getData(core::Call& call) {
     } else {
         // XTC file set and loaded --> use number of frames
         dc->SetFrameCount(vislib::math::Max(1U, static_cast<unsigned int>(this->numXTCFrames)));
+    }
+
+    if (this->mapFilenameSlot.IsDirty()) {
+        this->mapFilenameSlot.ResetDirty();
+        this->loadMapping();
     }
 
     // if no xtc-filename has been set
@@ -1057,7 +1068,7 @@ void PDBLoader::loadFrame(view::AnimDataModule::Frame* frame, unsigned int idx) 
 
     xtcFile.seekg(this->XTCFrameOffset[idx]);
 
-    fr->readFrame(&xtcFile);
+    fr->readFrame(&xtcFile, this->atomIdMapping);
 
     xtcFile.close();
     //}
@@ -1416,7 +1427,7 @@ void PDBLoader::loadFile(const vislib::TString& filename) {
 
             // check whether the pdb-file and the xtc-file contain the
             // same number of atoms
-            if (nAtoms != atomEntries.Count()) {
+            if (nAtoms != atomEntries.Count() && this->atomIdMapping.size() != atomEntries.Count()) {
                 Log::DefaultLog.WriteMsg(Log::LEVEL_ERROR,
                     "XTC-File and given PDB-file not matching (XTC-file has"
                     "%i atom entries, PDB-file has %i atom entries).",
@@ -2161,7 +2172,7 @@ bool PDBLoader::readNumXTCFrames() {
     }
     xtcFile.close();
 
-    // remove the last frame
+    // remove the last frame (schatzkn: why though?)
     this->XTCFrameOffset.RemoveLast();
     this->numXTCFrames--;
 
@@ -2230,6 +2241,48 @@ void PDBLoader::parseBBoxEntry(vislib::StringA& bboxEntry) {
     //            bboxRight, bboxTop, bboxFront);
 }
 
+
+bool PDBLoader::loadMapping(void) {
+    if (this->mapFilenameSlot.Param<param::FilePathParam>()->Value().IsEmpty()) {
+        return false;
+    }
+    this->atomIdMapping.clear();
+    // load file
+    std::string filepath = this->mapFilenameSlot.Param<param::FilePathParam>()->Value().PeekBuffer();
+    std::ifstream file(filepath);
+    if (file.is_open()) {
+        std::string line;
+        while (std::getline(file, line)) {
+            std::vector<std::string> tokens;
+            std::string field;
+            std::istringstream stream(line);
+            while (std::getline(stream, field, ',')) {
+                tokens.push_back(field);
+            }
+            if (tokens.size() >= 2) {
+                this->atomIdMapping.insert(std::make_pair(std::stoull(tokens.at(0)), std::stoull(tokens.at(1))));
+            }
+        }
+    } else {
+        return false;
+    }
+    // post-process mapping to fit to data (i.e. change intitial indices to local indices)
+    std::map<uint64_t, uint64_t> newmap;
+    std::vector<int> former(this->atomFormerIdx.PeekElements(), this->atomFormerIdx.PeekElements() + this->atomFormerIdx.Count());
+    for (SIZE_T i = 0; i < this->atomFormerIdx.Count(); ++i) {
+        int form = this->atomFormerIdx[i];
+        if (this->atomIdMapping.count(form) > 0) {
+            auto value = this->atomIdMapping.at(form);
+            newmap.insert(std::make_pair(i, value));
+            // TODO actually insert value - 1?
+        } else {
+            megamol::core::utility::log::Log::DefaultLog.WriteError(
+                "Could not find the former id %i in the id mapping", static_cast<int>(form));
+        }
+    }
+    this->atomIdMapping = newmap;
+    return true;
+}
 
 #ifdef WITH_CURL
 

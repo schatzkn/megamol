@@ -12,6 +12,7 @@
 #endif /* (defined(_MSC_VER) && (_MSC_VER > 1000)) */
 
 #include <fstream>
+#include <map>
 #include "ForceDataCall.h"
 #include "MDDriverConnector.h"
 #include "MultiPDBLoader.h"
@@ -182,7 +183,7 @@ namespace protein {
              *
              * @param file Pointer to the current frame in the xtc-file
              */
-            void readFrame(std::fstream* file);
+            void readFrame(std::fstream* file, const std::map<uint64_t, uint64_t>& idmap);
 
             /**
              * Calculates the number of bits needed to represent a given
@@ -254,8 +255,9 @@ namespace protein {
              *
              * @param atomCnt The atom count
              */
-            inline void SetAtomCount(unsigned int atomCnt) {
+            inline void SetAtomCount(unsigned int atomCnt, unsigned int xtcAtomCnt = 0) {
                 this->atomCount = atomCnt;
+                this->xtcAtomCount = xtcAtomCnt == 0 ? atomCnt : xtcAtomCnt;
                 this->atomPosition.SetCount(atomCnt * 3);
                 this->bfactor.SetCount(atomCnt);
                 this->charge.SetCount(atomCnt);
@@ -472,6 +474,9 @@ namespace protein {
             /** The atom count */
             unsigned int atomCount;
 
+            /** The atom count in the xtc file. May be different from atomCount, but only if a mapping is present */
+            unsigned int xtcAtomCount;
+
             /** The atom positions */
             vislib::Array<float> atomPosition;
 
@@ -655,6 +660,13 @@ namespace protein {
          */
         void writeToXtcFile(const vislib::TString& filename);
 
+        /**
+         * Load the mapping between atom ids and ids in the xtc file
+         *
+         * @return True if a mapping could be loaded, false otherwise
+         */
+        bool loadMapping(void);
+
 
         // -------------------- variables --------------------
 
@@ -763,6 +775,9 @@ namespace protein {
 
         /** Storage of the pdb filename */
         vislib::TString pdbfilename;
+
+        /** atom id mapping for strange xtc files */
+        std::map<uint64_t, uint64_t> atomIdMapping;
     };
 
 
